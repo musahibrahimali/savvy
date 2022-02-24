@@ -1,12 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:status_saver/index.dart';
 
 // pages
 final List<Widget> pages = [
-  const HomePage(),
-  const HomePageBusiness(),
+  HomePage(),
+  HomePageBusiness(),
 ];
 
 // tabviews
@@ -111,4 +112,13 @@ AppBar buildAppBar(TabController _tabController) {
 
   // return app bar
   return appBar;
+}
+
+Container buildContainer(_bannerAd, {double vertical = 10.0, double horizontal = 0.0}) {
+  return Container(
+    margin: EdgeInsets.symmetric(vertical: vertical, horizontal: horizontal),
+    height: 60.0,
+    width: double.infinity,
+    child: AdWidget(ad: _bannerAd!),
+  );
 }

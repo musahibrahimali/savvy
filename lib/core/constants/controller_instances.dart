@@ -6,6 +6,7 @@ PermissionController permissionController = PermissionController.instance;
 WhatsAppTypeController whatsAppTypeController = WhatsAppTypeController.instance;
 ThemeController themeController = ThemeController.instance;
 PageViewController pageViewController = PageViewController.instance;
+GoogleAdsController googleAdsController = GoogleAdsController.instance;
 
 // share preference instance
 Future<SharedPreferences> sharedPreferences = SharedPreferences.getInstance();

@@ -2,7 +2,9 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:gallery_saver/gallery_saver.dart';
+import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:status_saver/index.dart';
 import 'package:flutter_share_me/flutter_share_me.dart';
 import 'package:video_player/video_player.dart';
@@ -23,38 +25,66 @@ class _ViewVideoState extends State<ViewVideo> {
 
   late VideoPlayerController _videoPlayerController;
 
+  late BannerAd _bannerAd;
+
+  bool _isPlaying = false;
+
   @override
   void initState() {
+    _bannerAd = googleAdsController.getBannerAd;
     _videoPlayerController = VideoPlayerController.network(widget.video)
       ..initialize().then((_) {
         if (!mounted) return;
         setState(() {});
       });
+    // set the video to loop
+    _videoPlayerController.setLooping(true);
+    // play the video after it is initialized
+    _videoPlayerController.play();
+    _isPlaying = true;
     super.initState();
   }
 
   @override
+  void dispose() {
+    _bannerAd.dispose();
+    _videoPlayerController.dispose();
+    super.dispose();
+  }
+
+  @override
+  void setState(fn) {
+    if (mounted) {
+      super.setState(fn);
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Colors.black12,
-      appBar: AppBar(
-        elevation: 0.0,
-        backgroundColor: Colors.transparent,
-        leading: IconButton(
-          icon: const Icon(
-            Icons.close,
-            color: Colors.white,
-            size: 28.0,
+    return Obx(
+      () => Scaffold(
+        backgroundColor: themeController.isLightTheme ? BrandColors.colorBackground : BrandColors.kDarkGray,
+        appBar: AppBar(
+          elevation: 0.0,
+          centerTitle: true,
+          backgroundColor: Colors.transparent,
+          leading: IconButton(
+            icon: Icon(
+              Icons.close_rounded,
+              color: themeController.isLightTheme ? BrandColors.kDarkGray : BrandColors.colorWhiteAccent,
+              size: 28.0,
+            ),
+            onPressed: () => {
+              // if video is playig then pause it
+              if (_videoPlayerController.value.isPlaying) _videoPlayerController.pause(),
+              // stop video
+              _videoPlayerController.seekTo(const Duration(seconds: 0)),
+              Navigator.pop(context)
+            },
           ),
-          onPressed: () => {
-            // if video is playig then pause it
-            if (_videoPlayerController.value.isPlaying) _videoPlayerController.pause(),
-            Navigator.pop(context)
-          },
+          title: buildContainer(_bannerAd, vertical: 5.0),
         ),
-      ),
-      body: SizedBox.expand(
-        child: Stack(
+        body: Stack(
           children: <Widget>[
             Align(
               alignment: Alignment.center,
@@ -68,20 +98,35 @@ class _ViewVideoState extends State<ViewVideo> {
             // add a play button in the middle of the aspect ratio
             Align(
               alignment: Alignment.center,
-              child: Container(
-                color: Colors.transparent,
-                child: InkWell(
-                  onTap: () {
-                    setState(() {
-                      _videoPlayerController.value.isPlaying
-                          ? _videoPlayerController.pause()
-                          : _videoPlayerController.play();
-                    });
-                  },
-                  child: Icon(
-                    _videoPlayerController.value.isPlaying ? Icons.pause : Icons.play_arrow,
-                    color: Colors.white,
+              child: InkWell(
+                onTap: () {
+                  setState(() {
+                    _videoPlayerController.value.isPlaying
+                        ? _videoPlayerController.pause()
+                        : _videoPlayerController.play();
+                    _isPlaying = !_isPlaying;
+                  });
+                },
+                child: Container(
+                  height: 50.0,
+                  width: 50.0,
+                  decoration: BoxDecoration(
+                    color: Colors.transparent,
+                    borderRadius: BorderRadius.circular(50.0),
+                    border: Border.all(
+                      color: themeController.isLightTheme ? BrandColors.kGrayWhite : BrandColors.colorWhiteAccent,
+                      width: 2.0,
+                    ),
                   ),
+                  child: _isPlaying
+                      ? Icon(
+                          _videoPlayerController.value.isPlaying ? Icons.pause : Icons.play_arrow,
+                          color: Colors.white,
+                        )
+                      : Icon(
+                          Icons.play_arrow,
+                          color: themeController.isLightTheme ? BrandColors.kGrayWhite : BrandColors.colorWhiteAccent,
+                        ),
                 ),
               ),
             ),

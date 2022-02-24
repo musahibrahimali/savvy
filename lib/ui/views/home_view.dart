@@ -3,14 +3,9 @@ import 'package:get/get.dart';
 import 'package:status_saver/index.dart';
 import 'package:status_saver/ui/views/components/custom_bottom_bar.dart';
 
-class HomeView extends StatefulWidget {
-  const HomeView({Key? key}) : super(key: key);
+class HomeView extends StatelessWidget {
+  HomeView({Key? key}) : super(key: key);
 
-  @override
-  _HomeViewState createState() => _HomeViewState();
-}
-
-class _HomeViewState extends State<HomeView> {
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   // page controller
   final PageController _pageController = PageController();
@@ -28,7 +23,7 @@ class _HomeViewState extends State<HomeView> {
             _pageController.animateToPage(
               index,
               duration: const Duration(milliseconds: 300),
-              curve: Curves.easeInOut,
+              curve: Curves.linear,
             );
           },
         ),

@@ -16,17 +16,24 @@ class HelperFunctions {
 
   // get all image files from the directory
   static List<String> getImageFiles(String path) {
-    Directory directory = Directory(path);
-    List<String> imageList =
-        directory.listSync().map((item) => item.path).where((item) => item.endsWith(".jpg")).toList(growable: false);
-    return imageList;
+    Directory _directory = Directory(path);
+    List<String> _imageList =
+        _directory.listSync().map((item) => item.path).where((item) => item.endsWith(".jpg")).toList(growable: false);
+    return _imageList;
   }
 
   // get all video files from the directory
   static List<String> getVideoFiles(String path) {
-    Directory directory = Directory(path);
-    List<String> imageList =
-        directory.listSync().map((item) => item.path).where((item) => item.endsWith(".mp4")).toList(growable: false);
-    return imageList;
+    Directory _directory = Directory(path);
+    List<String> _videoList =
+        _directory.listSync().map((item) => item.path).where((item) => item.endsWith(".mp4")).toList(growable: false);
+    return _videoList;
+  }
+
+  // get the file date
+  static String getFileDate(String path) {
+    File file = File(path);
+    DateTime dateTime = file.statSync().modified;
+    return dateTime.toString();
   }
 }

@@ -2,14 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:status_saver/index.dart';
 
-class HomePageBusiness extends StatefulWidget {
-  const HomePageBusiness({Key? key}) : super(key: key);
+class HomePageBusiness extends StatelessWidget {
+  HomePageBusiness({Key? key}) : super(key: key);
 
-  @override
-  _HomePageBusinessState createState() => _HomePageBusinessState();
-}
-
-class _HomePageBusinessState extends State<HomePageBusiness> {
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
 
   @override

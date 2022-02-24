@@ -1,9 +1,10 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:google_fonts/google_fonts.dart';
+import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:status_saver/index.dart';
 import 'package:status_saver/ui/video/components/components.dart';
-import 'package:status_saver/ui/video/components/view_video.dart';
 
 class VideoScreen extends StatefulWidget {
   const VideoScreen({Key? key}) : super(key: key);
@@ -16,10 +17,19 @@ class _VideoScreenState extends State<VideoScreen> {
   late List<String> _files;
   bool _isLoading = true;
 
+  late BannerAd _bannerAd;
+
   @override
   void initState() {
     _files = HelperFunctions.getVideoFiles(whatsAppTypeController.currentWhatsAppType);
+    _bannerAd = googleAdsController.getBannerAd;
     super.initState();
+  }
+
+  @override
+  void dispose() {
+    _bannerAd.dispose();
+    super.dispose();
   }
 
   // override setState
@@ -32,77 +42,37 @@ class _VideoScreenState extends State<VideoScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Obx(
-      () => Scaffold(
-        backgroundColor: themeController.isLightTheme ? BrandColors.colorBackground : BrandColors.kDark,
-        body: RefreshIndicator(
-          onRefresh: _onRefresh,
-          displacement: 15.0,
-          child: Container(
-            width: MediaQuery.of(context).size.width,
-            decoration: const BoxDecoration(),
-            padding: const EdgeInsets.symmetric(
-              horizontal: 6.0,
-              vertical: 12.0,
+    if (!Directory(whatsAppTypeController.currentWhatsAppType).existsSync()) {
+      return const InstallWhatsApp();
+    } else {
+      // delay 1 second to show loading
+      Future.delayed(const Duration(milliseconds: 300), () {
+        setState(() {
+          _isLoading = false;
+        });
+      });
+
+      return Obx(
+        () => Scaffold(
+          backgroundColor: themeController.isLightTheme ? BrandColors.colorBackground : BrandColors.kDarkGray,
+          body: RefreshIndicator(
+            onRefresh: _onRefresh,
+            displacement: 15.0,
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                // show the banner ad
+                buildContainer(_bannerAd),
+                BuildVideos(
+                  files: _files,
+                  isLoading: _isLoading,
+                ),
+              ],
             ),
-            child: _files.isNotEmpty
-                ? GridView.builder(
-                    gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
-                      maxCrossAxisExtent: 200,
-                      childAspectRatio: 3 / 3,
-                      crossAxisSpacing: 10,
-                      mainAxisSpacing: 10,
-                    ),
-                    itemCount: _files.length,
-                    itemBuilder: (BuildContext context, int index) {
-                      Future.delayed(
-                        const Duration(milliseconds: 300),
-                        () => setState(
-                          () {
-                            _isLoading = false;
-                          },
-                        ),
-                      );
-                      return VideoTile(
-                        file: _files[index],
-                        isLoading: _isLoading,
-                        onTap: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => ViewVideo(
-                                video: _files[index],
-                              ),
-                            ),
-                          );
-                        },
-                      );
-                    },
-                  )
-                : Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      Container(
-                        padding: const EdgeInsets.all(45.0),
-                        child: Text(
-                          "No Videos to Display",
-                          textAlign: TextAlign.center,
-                          overflow: TextOverflow.ellipsis,
-                          maxLines: 3,
-                          style: GoogleFonts.poppins(
-                            fontSize: 22.0,
-                            color: BrandColors.colorText,
-                            fontWeight: FontWeight.w500,
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
           ),
         ),
-      ),
-    );
+      );
+    }
   }
 
   Future<void> _onRefresh() async {

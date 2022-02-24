@@ -6,10 +6,10 @@ import 'package:status_saver/core/controllers/theme_controller.dart';
 import 'package:status_saver/index.dart';
 
 void main() {
-  // enable flutter widgets binding
+  // enable flutter widgets binding (using a plugin before runnig the app)
   WidgetsFlutterBinding.ensureInitialized();
 
-  // initialize google admob
+  // initialize google mobile ads
   MobileAds.instance.initialize();
 
   // get packages controller
@@ -17,6 +17,7 @@ void main() {
   Get.put(WhatsAppTypeController());
   Get.put(ThemeController());
   Get.put(PageViewController());
+  Get.put(GoogleAdsController());
   runApp(Savvy());
 
   // handle display orientation on various devices
@@ -34,8 +35,8 @@ void main() {
 class Savvy extends StatelessWidget {
   Savvy({Key? key}) : super(key: key) {
     permissionController.initPermision();
-    whatsAppTypeController.initWhatsAppType();
     themeController.initTheme();
+    whatsAppTypeController.initWhatsAppType();
     pageViewController.initView();
   }
 
@@ -47,7 +48,7 @@ class Savvy extends StatelessWidget {
       theme: lightThemeData(context),
       darkTheme: darkThemeData(context),
       themeMode: themeController.isLightTheme ? ThemeMode.light : ThemeMode.dark,
-      home: const HomeView(),
+      home: HomeView(),
     );
   }
 }
