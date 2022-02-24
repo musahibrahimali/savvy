@@ -4,10 +4,12 @@ import 'package:get/get.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:status_saver/core/controllers/theme_controller.dart';
 import 'package:status_saver/index.dart';
+import 'package:flutter_native_splash/flutter_native_splash.dart';
 
 void main() {
   // enable flutter widgets binding (using a plugin before runnig the app)
-  WidgetsFlutterBinding.ensureInitialized();
+  WidgetsBinding widgetsBinding = WidgetsFlutterBinding.ensureInitialized();
+  FlutterNativeSplash.preserve(widgetsBinding: widgetsBinding);
 
   // initialize google mobile ads
   MobileAds.instance.initialize();
@@ -18,6 +20,8 @@ void main() {
   Get.put(ThemeController());
   Get.put(PageViewController());
   Get.put(GoogleAdsController());
+
+  // remove the native splash screen when init is done
   runApp(Savvy());
 
   // handle display orientation on various devices
@@ -38,6 +42,7 @@ class Savvy extends StatelessWidget {
     themeController.initTheme();
     whatsAppTypeController.initWhatsAppType();
     pageViewController.initView();
+    FlutterNativeSplash.remove();
   }
 
   @override

@@ -38,6 +38,7 @@ dependencies:
   # utils
   shared_preferences: ^2.0.13
   flutter_share_me: ^1.2.0
+  flutter_native_splash: ^2.0.0
 
   # ads
   google_mobile_ads: ^1.1.0
@@ -48,35 +49,35 @@ dev_dependencies:
 
   flutter_lints: ^1.0.0
   # launcher names
-  # flutter_launcher_name: ^0.0.1
-
-  # native splash
-  # flutter_native_splash: ^2.0.0
+  flutter_app_name: ^0.1.1
 
   # launcher icons
-  # flutter_launcher_icons: ^0.9.2
+  flutter_launcher_icons: ^0.9.2
 
 # app name
-# flutter_launcher_name:
-#   name: "Savvy Saver"
+flutter_app_name:
+  name: "Savvy Saver"
 
 # app icons
-# flutter_icons:
-#   image_path_android: "assets/images/logo.png"
-#   image_path_ios: "assets/images/logo.png"
-#   android: true
-#   ios: true
-#   remove_alpha_ios: true
-#   adaptive_icon_background: "#000000"
+flutter_icons:
+  image_path_android: "assets/images/logo.png"
+  image_path_ios: "assets/images/logo.png"
+  android: true
+  ios: true
+  remove_alpha_ios: true
+  adaptive_icon_background: "#000000"
 
 # native splash screen
-# flutter_native_splash:
-#   background_image: "assets/welcome/splash_screen.png"
-#   background_image_dark: "assets/welcome/splash_screen.png"
-#   android: true
-#   ios: true
-#   android_gravity: fill
-#   ios_content_mode: scaleAspectFill
+flutter_native_splash:
+  background_image: "assets/welcome/splash_screen.png"
+  background_image_dark: "assets/welcome/splash_screen.png"
+  image: assets/images/logo.png
+  image_dark: assets/images/logo.png
+  android: true
+  ios: true
+  fullscreen: true
+  android_gravity: center
+  ios_content_mode: scaleAspectFill
 
 flutter:
   uses-material-design: true
