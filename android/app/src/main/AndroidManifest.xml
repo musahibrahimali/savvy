@@ -16,7 +16,7 @@
     </queries>
     
    <application
-        android:label="status_saver"
+        android:label="Savvy Saver"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">
         <activity
