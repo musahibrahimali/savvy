@@ -25,11 +25,11 @@ class GoogleAdsController extends GetxController {
 
   // get banner ad unit id
   String get getBannerAdUnitId =>
-      _isAndroid ? 'ca-app-pub-3940256099942544/6300978111' : 'ca-app-pub-3940256099942544/2934735716';
+      _isAndroid ? 'ca-app-pub-6362648380607319/7727855746' : 'ca-app-pub-3940256099942544/2934735716';
 
   // get interstitial ad unit id
   String get getInterstitialAdUnitId =>
-      _isAndroid ? 'ca-app-pub-3940256099942544/8691691433' : 'ca-app-pub-3940256099942544/5135589807';
+      _isAndroid ? 'ca-app-pub-6362648380607319/8005351056' : 'ca-app-pub-3940256099942544/5135589807';
 
   // get banner ad listener
   BannerAdListener get getBannerAdListener => _bannerAdListener;
