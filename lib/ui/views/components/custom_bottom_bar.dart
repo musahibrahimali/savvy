@@ -31,16 +31,20 @@ class CustomBottomNavBar extends StatelessWidget {
           fontWeight: FontWeight.w700,
           color: Colors.teal,
         ),
-        items: const [
+        items: [
           BottomNavigationBarItem(
-            icon: Icon(
-              Icons.store_mall_directory_sharp,
+            icon: Image.asset(
+              'assets/images/whatsapp.png',
+              width: 30.0,
+              height: 30.0,
             ),
             label: "WhatsApp",
           ),
           BottomNavigationBarItem(
-            icon: Icon(
-              Icons.store_mall_directory_outlined,
+            icon: Image.asset(
+              'assets/images/whatsapp_business.png',
+              width: 30.0,
+              height: 30.0,
             ),
             label: "Business",
           ),
