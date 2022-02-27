@@ -25,13 +25,58 @@ class _ViewVideoState extends State<ViewVideo> {
 
   late VideoPlayerController _videoPlayerController;
 
+  InterstitialAd? _interstitialAd;
+  int _numInterstitialLoadAttempts = 0;
+  final int maxFailedLoadAttempts = 3;
+
   late BannerAd _bannerAd;
 
   bool _isPlaying = false;
 
+  _createInterstitialAd() {
+    InterstitialAd.load(
+      adUnitId: googleAdsController.getInterstitialAdUnitId,
+      request: googleAdsController.getAdRequest,
+      adLoadCallback: InterstitialAdLoadCallback(
+        onAdLoaded: (InterstitialAd ad) {
+          _interstitialAd = ad;
+          _numInterstitialLoadAttempts = 0;
+          _interstitialAd!.setImmersiveMode(true);
+        },
+        onAdFailedToLoad: (LoadAdError error) {
+          _numInterstitialLoadAttempts += 1;
+          _interstitialAd = null;
+          if (_numInterstitialLoadAttempts <= maxFailedLoadAttempts) {
+            _createInterstitialAd();
+          }
+        },
+      ),
+    );
+  }
+
+  _showInterstitialAd() {
+    if (_interstitialAd == null) {
+      return;
+    }
+    _interstitialAd!.fullScreenContentCallback = FullScreenContentCallback(
+      onAdShowedFullScreenContent: (InterstitialAd ad) => {},
+      onAdDismissedFullScreenContent: (InterstitialAd ad) {
+        ad.dispose();
+        _createInterstitialAd();
+      },
+      onAdFailedToShowFullScreenContent: (InterstitialAd ad, AdError error) {
+        ad.dispose();
+        _createInterstitialAd();
+      },
+    );
+    _interstitialAd!.show();
+    _interstitialAd = null;
+  }
+
   @override
   void initState() {
-    _bannerAd = googleAdsController.getBannerAd;
+    super.initState();
+    _bannerAd = googleAdsController.createBannerAd;
     _videoPlayerController = VideoPlayerController.network(widget.video)
       ..initialize().then((_) {
         if (!mounted) return;
@@ -42,14 +87,15 @@ class _ViewVideoState extends State<ViewVideo> {
     // play the video after it is initialized
     _videoPlayerController.play();
     _isPlaying = true;
-    super.initState();
+    _createInterstitialAd();
   }
 
   @override
   void dispose() {
+    super.dispose();
     _bannerAd.dispose();
     _videoPlayerController.dispose();
-    super.dispose();
+    _interstitialAd?.dispose();
   }
 
   @override
@@ -74,15 +120,20 @@ class _ViewVideoState extends State<ViewVideo> {
               color: themeController.isLightTheme ? BrandColors.kDarkGray : BrandColors.colorWhiteAccent,
               size: 28.0,
             ),
-            onPressed: () => {
+            onPressed: () {
               // if video is playig then pause it
-              if (_videoPlayerController.value.isPlaying) _videoPlayerController.pause(),
+              if (_videoPlayerController.value.isPlaying) _videoPlayerController.pause();
               // stop video
-              _videoPlayerController.seekTo(const Duration(seconds: 0)),
-              Navigator.pop(context)
+              _videoPlayerController.seekTo(const Duration(seconds: 0));
+              try {
+                _showInterstitialAd();
+              } catch (error) {
+                return;
+              }
+              Navigator.pop(context);
             },
           ),
-          title: buildContainer(_bannerAd, vertical: 5.0),
+          title: buildBannerContainer(_bannerAd, vertical: 5.0),
         ),
         body: Stack(
           children: <Widget>[

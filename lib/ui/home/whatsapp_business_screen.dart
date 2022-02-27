@@ -16,8 +16,8 @@ class _WhatsAppBusinessScreenState extends State<WhatsAppBusinessScreen> with Ti
 
   @override
   void initState() {
-    _tabController = TabController(length: 2, vsync: this);
     super.initState();
+    _tabController = TabController(length: 2, vsync: this);
   }
 
   @override

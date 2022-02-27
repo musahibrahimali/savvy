@@ -114,7 +114,7 @@ AppBar buildAppBar(TabController _tabController) {
   return appBar;
 }
 
-Container buildContainer(_bannerAd, {double vertical = 10.0, double horizontal = 0.0}) {
+Container buildBannerContainer(_bannerAd, {double vertical = 10.0, double horizontal = 0.0}) {
   return Container(
     margin: EdgeInsets.symmetric(vertical: vertical, horizontal: horizontal),
     height: 60.0,

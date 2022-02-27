@@ -15,20 +15,65 @@ class ImageScreen extends StatefulWidget {
 class _ImageScreenState extends State<ImageScreen> {
   late List<String> _files;
   bool _isLoading = true;
+  InterstitialAd? _interstitialAd;
+  int _numInterstitialLoadAttempts = 0;
+  final int maxFailedLoadAttempts = 3;
 
   late BannerAd _bannerAd;
 
+  _createInterstitialAd() {
+    InterstitialAd.load(
+      adUnitId: googleAdsController.getInterstitialAdUnitId,
+      request: googleAdsController.getAdRequest,
+      adLoadCallback: InterstitialAdLoadCallback(
+        onAdLoaded: (InterstitialAd ad) {
+          _interstitialAd = ad;
+          _numInterstitialLoadAttempts = 0;
+          _interstitialAd!.setImmersiveMode(true);
+        },
+        onAdFailedToLoad: (LoadAdError error) {
+          _numInterstitialLoadAttempts += 1;
+          _interstitialAd = null;
+          if (_numInterstitialLoadAttempts <= maxFailedLoadAttempts) {
+            _createInterstitialAd();
+          }
+        },
+      ),
+    );
+  }
+
+  _showInterstitialAd() {
+    if (_interstitialAd == null) {
+      return;
+    }
+    _interstitialAd!.fullScreenContentCallback = FullScreenContentCallback(
+      onAdShowedFullScreenContent: (InterstitialAd ad) => {},
+      onAdDismissedFullScreenContent: (InterstitialAd ad) {
+        ad.dispose();
+        _createInterstitialAd();
+      },
+      onAdFailedToShowFullScreenContent: (InterstitialAd ad, AdError error) {
+        ad.dispose();
+        _createInterstitialAd();
+      },
+    );
+    _interstitialAd!.show();
+    _interstitialAd = null;
+  }
+
   @override
   void initState() {
-    _files = HelperFunctions.getImageFiles(whatsAppTypeController.currentWhatsAppType);
-    _bannerAd = googleAdsController.getBannerAd;
     super.initState();
+    _files = HelperFunctions.getImageFiles(whatsAppTypeController.currentWhatsAppType);
+    _bannerAd = googleAdsController.createBannerAd;
+    _createInterstitialAd();
   }
 
   @override
   void dispose() {
-    _bannerAd.dispose();
     super.dispose();
+    _bannerAd.dispose();
+    _interstitialAd?.dispose();
   }
 
   @override
@@ -60,10 +105,11 @@ class _ImageScreenState extends State<ImageScreen> {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 // show the banner ad
-                buildContainer(_bannerAd),
+                buildBannerContainer(_bannerAd),
                 BuildImages(
                   files: _files,
                   isLoading: _isLoading,
+                  openAd: _showInterstitialAd,
                 ),
               ],
             ),

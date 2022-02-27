@@ -22,18 +22,65 @@ class ViewImage extends StatefulWidget {
 class _ViewImageState extends State<ViewImage> {
   final FlutterShareMe flutterShareMe = FlutterShareMe();
 
+  InterstitialAd? _interstitialAd;
+  int _numInterstitialLoadAttempts = 0;
+  final int maxFailedLoadAttempts = 3;
+
+  // banner ad
   late BannerAd _bannerAd;
+
+  _createInterstitialAd() {
+    InterstitialAd.load(
+      adUnitId: googleAdsController.getInterstitialAdUnitId,
+      request: googleAdsController.getAdRequest,
+      adLoadCallback: InterstitialAdLoadCallback(
+        onAdLoaded: (InterstitialAd ad) {
+          _interstitialAd = ad;
+          _numInterstitialLoadAttempts = 0;
+          _interstitialAd!.setImmersiveMode(true);
+        },
+        onAdFailedToLoad: (LoadAdError error) {
+          _numInterstitialLoadAttempts += 1;
+          _interstitialAd = null;
+          if (_numInterstitialLoadAttempts <= maxFailedLoadAttempts) {
+            _createInterstitialAd();
+          }
+        },
+      ),
+    );
+  }
+
+  _showInterstitialAd() {
+    if (_interstitialAd == null) {
+      return;
+    }
+    _interstitialAd!.fullScreenContentCallback = FullScreenContentCallback(
+      onAdShowedFullScreenContent: (InterstitialAd ad) => {},
+      onAdDismissedFullScreenContent: (InterstitialAd ad) {
+        ad.dispose();
+        _createInterstitialAd();
+      },
+      onAdFailedToShowFullScreenContent: (InterstitialAd ad, AdError error) {
+        ad.dispose();
+        _createInterstitialAd();
+      },
+    );
+    _interstitialAd!.show();
+    _interstitialAd = null;
+  }
 
   @override
   void initState() {
-    _bannerAd = googleAdsController.getBannerAd;
     super.initState();
+    _bannerAd = googleAdsController.createBannerAd;
+    _createInterstitialAd();
   }
 
   @override
   void dispose() {
-    _bannerAd.dispose();
     super.dispose();
+    _bannerAd.dispose();
+    _interstitialAd?.dispose();
   }
 
   @override
@@ -51,9 +98,17 @@ class _ViewImageState extends State<ViewImage> {
               Icons.close_rounded,
               color: themeController.isLightTheme ? BrandColors.kDarkGray : BrandColors.colorWhiteAccent,
             ),
-            onPressed: () => Navigator.of(context).pop(),
+            onPressed: () {
+              try {
+                _showInterstitialAd();
+              } catch (error) {
+                return;
+              }
+              // navigate back
+              Navigator.of(context).pop();
+            },
           ),
-          title: buildContainer(_bannerAd),
+          title: buildBannerContainer(_bannerAd),
         ),
         body: SizedBox.expand(
           child: Stack(

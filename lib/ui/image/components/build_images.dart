@@ -4,10 +4,12 @@ import 'package:status_saver/index.dart';
 class BuildImages extends StatelessWidget {
   final List<String> files;
   final bool isLoading;
+  final void Function() openAd;
   const BuildImages({
     Key? key,
     required this.files,
     required this.isLoading,
+    required this.openAd,
   }) : super(key: key);
 
   @override
@@ -34,6 +36,11 @@ class BuildImages extends StatelessWidget {
                     file: files[index],
                     isLoading: isLoading,
                     onTap: () {
+                      try {
+                        openAd();
+                      } catch (error) {
+                        return;
+                      }
                       Navigator.push(
                         context,
                         MaterialPageRoute(

@@ -4,11 +4,13 @@ import 'package:status_saver/ui/video/components/components.dart';
 class BuildVideos extends StatelessWidget {
   final List<String> files;
   final bool isLoading;
+  final void Function() openAd;
 
   const BuildVideos({
     Key? key,
     required this.files,
     required this.isLoading,
+    required this.openAd,
   }) : super(key: key);
 
   @override
@@ -35,6 +37,11 @@ class BuildVideos extends StatelessWidget {
                     file: files[index],
                     isLoading: isLoading,
                     onTap: () {
+                      try {
+                        openAd();
+                      } catch (error) {
+                        return;
+                      }
                       Navigator.push(
                         context,
                         MaterialPageRoute(

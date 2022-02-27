@@ -16,8 +16,8 @@ class _WhatsAppScreenState extends State<WhatsAppScreen> with TickerProviderStat
 
   @override
   void initState() {
-    _tabController = TabController(length: 2, vsync: this);
     super.initState();
+    _tabController = TabController(length: 2, vsync: this);
   }
 
   @override
